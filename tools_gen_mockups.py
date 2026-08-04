@@ -140,8 +140,12 @@ def m_result(fname, name, letter, band, score, clone_time, clone_label, data):
         base(d, 3, 44, s, BIG)
         base(d, 3 + width(d, s, BIG) + 2, 43, "/100", SEC)
 
-    base(d, 52, 33, f"CLONE  {clone_time}", SEC)
-    base(d, 52, 43, clone_label, SEC)
+    if clone_time is None:  # nothing decoded - point at the report instead
+        base(d, 52, 33, "Nothing read", SEC)
+        base(d, 52, 43, "OK for help", SEC)
+    else:
+        base(d, 52, 33, f"CLONE  {clone_time}", SEC)
+        base(d, 52, 43, clone_label, SEC)
 
     # the credential, as bars
     d.rectangle([2, 46, 125, 53], outline=INK)
@@ -242,6 +246,17 @@ if __name__ == "__main__":
         [0x3E, 0x1C, 0x00, 0x00, 0x4B, 0x2A, 0x7F, 0x01],
     )
 
+    unread = m_result(
+        "screen_unread.png",
+        "Unknown 125 kHz tag",
+        "-",
+        "UNREAD",
+        None,
+        None,
+        None,
+        [],
+    )
+
     report = m_scroll(
         "screen_report.png",
         [
@@ -275,3 +290,4 @@ if __name__ == "__main__":
 
     strip([menu, scan, em, gal], "screens.png", cols=4)
     strip([hid, report, score, fdx], "screens_report.png", cols=4)
+    strip([unread], "screen_unread_solo.png", cols=1)

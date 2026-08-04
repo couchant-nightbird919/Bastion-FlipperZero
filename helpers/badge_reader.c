@@ -134,7 +134,16 @@ bool badge_reader_take(BadgeReader* reader, BadgeCapture* out, FuriString* rende
     furi_mutex_acquire(reader->lock, FuriWaitForever);
     const bool ready = (reader->stage == BadgeStageDecoded);
     const ProtocolId protocol = reader->decoded;
-    if(ready) reader->decoded = PROTOCOL_NO; /* take() succeeds once per read */
+    if(ready) {
+        reader->decoded = PROTOCOL_NO; /* take() succeeds once per read */
+        /* A ReadDone carrying a protocol we cannot use would otherwise pin the
+         * stage at Decoded forever: take() would keep refusing and the scan
+         * screen would sit on "Decoded" with nothing behind it. Fall back to
+         * sensing and keep reading instead. */
+        if(protocol == PROTOCOL_NO || protocol >= LFRFIDProtocolMax) {
+            reader->stage = BadgeStageSensing;
+        }
+    }
     furi_mutex_release(reader->lock);
 
     if(!ready || protocol == PROTOCOL_NO || protocol >= LFRFIDProtocolMax) return false;

@@ -1,8 +1,22 @@
 #include "../bastion_i.h"
 
+/* Ticks are 100 ms. A grader that sits on "Sensing..." indefinitely leaves the
+ * user guessing whether the badge is wrong, the placement is wrong, or the app
+ * is broken - so after twenty seconds Bastion answers with the one verdict it
+ * can honestly give: nothing decoded, and here is why that happens. */
+#define BST_SCAN_TIMEOUT_TICKS 200u
+
+/* Hand the result scene a verdict and move to it. */
+static void bastion_scan_deliver(BastionApp* app) {
+    lf_grade_evaluate(&app->capture.reading, &app->grade);
+    bastion_notify_graded(app, &app->grade);
+    view_dispatcher_send_custom_event(app->view_dispatcher, BastionCustomEventBadgeRead);
+}
+
 void bastion_scene_scan_on_enter(void* context) {
     BastionApp* app = context;
 
+    scene_manager_set_scene_state(app->scene_manager, BastionSceneScan, 0);
     scan_view_reset(app->scan_view);
     scan_view_set_mode(app->scan_view, (BadgeMode)app->settings.mode);
     badge_reader_start(app->reader, (BadgeMode)app->settings.mode);
@@ -23,12 +37,21 @@ bool bastion_scene_scan_on_event(void* context, SceneManagerEvent event) {
         scan_view_set_stage(app->scan_view, badge_reader_stage(app->reader));
 
         if(badge_reader_take(app->reader, &app->capture, app->decoded_fields)) {
-            lf_grade_evaluate(&app->capture.reading, &app->grade);
-            app->have_result = true;
-            bastion_notify_graded(app, &app->grade);
+            bastion_scan_deliver(app);
+            /* Only real reads reach the log; a timeout is not a badge. */
             if(app->settings.logging) bst_store_log_append(&app->grade);
-            view_dispatcher_send_custom_event(
-                app->view_dispatcher, BastionCustomEventBadgeRead);
+        } else {
+            uint32_t ticks =
+                scene_manager_get_scene_state(app->scene_manager, BastionSceneScan) + 1;
+            scene_manager_set_scene_state(app->scene_manager, BastionSceneScan, ticks);
+
+            if(ticks >= BST_SCAN_TIMEOUT_TICKS) {
+                badge_reader_stop(app->reader);
+                memset(&app->capture, 0, sizeof(app->capture));
+                app->capture.reading.proto = LfProtoUnknown;
+                furi_string_reset(app->decoded_fields);
+                bastion_scan_deliver(app);
+            }
         }
         consumed = true;
     }

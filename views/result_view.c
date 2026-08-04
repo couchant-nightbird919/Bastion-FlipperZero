@@ -129,10 +129,17 @@ static void result_view_draw(Canvas* canvas, void* model) {
     /* --- what a copy costs --- */
     canvas_set_font(canvas, FontSecondary);
     char line[24];
-    snprintf(line, sizeof(line), "CLONE  %s", lf_clone_time(g->clone));
-    canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B1, line);
-    fit_text(canvas, lf_clone_short(g->clone), 126 - RV_INFO_X, line, sizeof(line));
-    canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B2, line);
+    if(g->clone == LfCloneUnknown) {
+        /* Nothing decoded: a clone cost here would be meaningless, so point at
+         * the report, which carries the placement advice. */
+        canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B1, "Nothing read");
+        canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B2, "OK for help");
+    } else {
+        snprintf(line, sizeof(line), "CLONE  %s", lf_clone_time(g->clone));
+        canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B1, line);
+        fit_text(canvas, lf_clone_short(g->clone), 126 - RV_INFO_X, line, sizeof(line));
+        canvas_draw_str(canvas, RV_INFO_X, RV_INFO_B2, line);
+    }
 
     rv_draw_bits(canvas, m->data, m->data_len);
 

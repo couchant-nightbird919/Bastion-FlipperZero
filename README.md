@@ -177,7 +177,13 @@ The `.fap` lands in `dist/`. `ufbt launch` builds, uploads and starts it on a co
 3. Watch the read stage: *Sensing → Tag in field → Demodulating ASK/PSK → Decoded*.
 4. Read the verdict. Press **OK** for the full report, **→** to grade another.
 
-Nothing reads? The badge may be 13.56 MHz — grade that with [Warden](https://github.com/at0m-b0mb/Warden-FlipperZero) instead. Or the format may sit outside the firmware's decoder set; try forcing ASK or PSK in Settings.
+If nothing decodes within twenty seconds, Bastion stops guessing and says so — a grader that sits on *Sensing…* forever leaves you wondering whether the badge is wrong, the placement is wrong, or the app is broken. The report then carries the troubleshooting:
+
+<div align="center">
+<img src="images/screen_unread.png" alt="Bastion's no-read verdict" width="46%">
+</div>
+
+Common causes: the badge is **13.56 MHz**, not 125 kHz — grade that with [Warden](https://github.com/at0m-b0mb/Warden-FlipperZero) instead. Or the format sits outside the firmware's decoder set. Or the coupling is poor: try forcing ASK or PSK in Settings, and take the badge out of a wallet holding other cards.
 
 ---
 

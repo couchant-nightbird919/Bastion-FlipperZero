@@ -20,7 +20,7 @@
 #include "views/result_view.h"
 #include "scenes/bastion_scene.h"
 
-#define BASTION_VERSION "1.0"
+#define BASTION_VERSION "1.1"
 
 typedef enum {
     BastionViewSubmenu,
@@ -58,7 +58,6 @@ typedef struct {
     BadgeCapture capture;
     LfGrade grade;
     FuriString* decoded_fields; // the decoder's own field dump, for the report
-    bool have_result;
 } BastionApp;
 
 /* feedback (defined in bastion.c), all gated by settings */
