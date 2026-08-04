@@ -1,0 +1,34 @@
+App(
+    appid="bastion",
+    name="Bastion",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="bastion_app",
+    stack_size=4 * 1024,
+    fap_category="RFID",
+    fap_icon="icons/bastion_10px.png",
+    fap_icon_assets="icons",
+    fap_author="at0m-b0mb",
+    fap_weburl="https://github.com/at0m-b0mb/Bastion-FlipperZero",
+    fap_version="1.0",
+    # Explicit, so the recursive default does not sweep test/ (host-only code)
+    # into the firmware build.
+    sources=[
+        "bastion.c",
+        "helpers/*.c",
+        "views/*.c",
+        "scenes/*.c",
+    ],
+    fap_description=(
+        "125 kHz badge grader. Hold your own EM4100, HID Prox, Indala, AWID, "
+        "ioProx, Paradox, Gallagher or Nexwatch badge to the Flipper's back and "
+        "Bastion identifies the format and hands back a plain-English security "
+        "grade with a full report: how much of the credential is plaintext, how "
+        "much is left to guess after one badge is read, and what a copy would "
+        "cost an attacker. Grades 24 low-frequency formats on a published "
+        "four-term scale, flags animal transponders instead of grading them, and "
+        "logs every result to CSV for a site survey. Strictly read-only: it never "
+        "writes a blank, never emulates your badge, and leaves the tag exactly as "
+        "it found it."
+    ),
+    requires=["gui", "storage"],
+)

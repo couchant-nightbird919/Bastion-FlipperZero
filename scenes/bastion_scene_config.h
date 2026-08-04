@@ -1,0 +1,7 @@
+ADD_SCENE(bastion, start, Start)
+ADD_SCENE(bastion, scan, Scan)
+ADD_SCENE(bastion, result, Result)
+ADD_SCENE(bastion, report, Report)
+ADD_SCENE(bastion, log, Log)
+ADD_SCENE(bastion, settings, Settings)
+ADD_SCENE(bastion, about, About)
