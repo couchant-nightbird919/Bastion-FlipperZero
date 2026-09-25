@@ -25,9 +25,10 @@ extern "C" {
 #define BST_MAX_FINDINGS 7u
 #define BST_MAX_DATA     16u
 
-/* Mirrors LFRFIDProtocol from the firmware, entry for entry, so the reader can
- * map one to the other with a cast. bst_proto_from_lfrfid() guards the join and
- * a static assert in badge_reader.c pins LfProtoUnknown == LFRFIDProtocolMax. */
+/* Bastion-owned protocol identifiers. These values deliberately do not mirror
+ * the firmware's LFRFIDProtocol enum: third-party firmware may insert, remove
+ * or reorder protocols. The reader maps the firmware's semantic protocol name
+ * through lf_proto_from_firmware_name() instead. */
 typedef enum {
     LfProtoEM4100 = 0,
     LfProtoEM410032,
@@ -54,7 +55,7 @@ typedef enum {
     LfProtoGProxII,
     LfProtoNoralsy,
 
-    LfProtoUnknown, /* nothing decoded; must equal LFRFIDProtocolMax */
+    LfProtoUnknown, /* unsupported or unrecognised by Bastion */
     LfProtoCount,
 } LfProto;
 
@@ -147,6 +148,10 @@ const char* lf_clone_short(LfCloneClass c); /* "Cheap cloner" - the 74 px column
 const char* lf_mod_label(LfMod mod); /* "ASK" / "FSK" / "PSK" / "?" */
 const char* lf_severity_glyph(LfFindSeverity sev); /* "[x]" "[!]" "[+]" "[i]" */
 const char* lf_proto_name(LfProto proto); /* display name, safe for any input */
+
+/** Translate a firmware ProtocolBase.name into Bastion's stable protocol id.
+ *  Unknown firmware-specific protocols fail closed as LfProtoUnknown. */
+LfProto lf_proto_from_firmware_name(const char* name);
 
 /** Letter for a raw score, on the same scale Warden uses for 13.56 MHz cards -
  *  so an F here and an F there mean the same thing. */
