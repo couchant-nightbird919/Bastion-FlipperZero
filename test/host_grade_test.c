@@ -153,6 +153,64 @@ int main(void) {
         if(!found) fail("protocol %d (%s) has no pinned grade", p, lf_proto_name((LfProto)p));
     }
 
+    /* ---- firmware protocol names are semantic, not enum positions ---- */
+    printf("- firmware protocol name mapping\n");
+    {
+        static const struct {
+            const char* name;
+            LfProto proto;
+        } names[] = {
+            {"EM4100", LfProtoEM4100},
+            {"EM4100/32", LfProtoEM410032},
+            {"EM4100/16", LfProtoEM410016},
+            {"Electra", LfProtoElectra},
+            {"H10301", LfProtoH10301},
+            {"Idteck", LfProtoIdteck},
+            {"Indala26", LfProtoIndala26},
+            {"IoProxXSF", LfProtoIOProxXSF},
+            {"AWID", LfProtoAwid},
+            {"FDX-A", LfProtoFDXA},
+            {"FDX-B", LfProtoFDXB},
+            {"HIDProx", LfProtoHidGeneric},
+            {"HIDExt", LfProtoHidExGeneric},
+            {"Pyramid", LfProtoPyramid},
+            {"Viking", LfProtoViking},
+            {"Jablotron", LfProtoJablotron},
+            {"Paradox", LfProtoParadox},
+            {"PAC/Stanley", LfProtoPACStanley},
+            {"Keri", LfProtoKeri},
+            {"Gallagher", LfProtoGallagher},
+            {"Nexwatch", LfProtoNexwatch},
+            {"Radio Key", LfProtoSecurakey},
+            {"GProxII", LfProtoGProxII},
+            {"Noralsy", LfProtoNoralsy},
+        };
+
+        for(size_t i = 0; i < sizeof(names) / sizeof(names[0]); i++) {
+            char what[96];
+            snprintf(what, sizeof(what), "firmware name %s", names[i].name);
+            expect_int(
+                (int)lf_proto_from_firmware_name(names[i].name),
+                (int)names[i].proto,
+                what);
+        }
+
+        /* Firmware-specific additions must never slide into a Bastion protocol
+         * just because their numeric enum position happens to match one. */
+        expect_int(
+            (int)lf_proto_from_firmware_name("Indala224"),
+            (int)LfProtoUnknown,
+            "Unleashed Indala224 stays unknown");
+        expect_int(
+            (int)lf_proto_from_firmware_name("InstaFob"),
+            (int)LfProtoUnknown,
+            "Momentum/RogueMaster InstaFob stays unknown");
+        expect_int(
+            (int)lf_proto_from_firmware_name(NULL),
+            (int)LfProtoUnknown,
+            "NULL firmware name stays unknown");
+    }
+
     /* ---- band boundaries, from both sides ---- */
     printf("- band boundaries\n");
     /* Boundaries live in the engine; probe them through the published scale. */
