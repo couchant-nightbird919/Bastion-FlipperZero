@@ -701,6 +701,48 @@ const char* lf_proto_name(LfProto proto) {
     return lf_protos[proto].name;
 }
 
+LfProto lf_proto_from_firmware_name(const char* name) {
+    if(!name || !name[0]) return LfProtoUnknown;
+
+    static const struct {
+        const char* name;
+        LfProto proto;
+    } map[] = {
+        {"EM4100", LfProtoEM4100},
+        {"EM4100/32", LfProtoEM410032},
+        {"EM4100/16", LfProtoEM410016},
+        {"Electra", LfProtoElectra},
+        {"H10301", LfProtoH10301},
+        {"Idteck", LfProtoIdteck},
+        {"Indala26", LfProtoIndala26},
+        {"IoProxXSF", LfProtoIOProxXSF},
+        {"IOProxXSF", LfProtoIOProxXSF},
+        {"AWID", LfProtoAwid},
+        {"FDX-A", LfProtoFDXA},
+        {"FDX-B", LfProtoFDXB},
+        {"HIDProx", LfProtoHidGeneric},
+        {"HIDExt", LfProtoHidExGeneric},
+        {"Pyramid", LfProtoPyramid},
+        {"Viking", LfProtoViking},
+        {"Jablotron", LfProtoJablotron},
+        {"Paradox", LfProtoParadox},
+        {"PAC/Stanley", LfProtoPACStanley},
+        {"Keri", LfProtoKeri},
+        {"Gallagher", LfProtoGallagher},
+        {"Nexwatch", LfProtoNexwatch},
+        {"Radio Key", LfProtoSecurakey},
+        {"Securakey", LfProtoSecurakey},
+        {"GProxII", LfProtoGProxII},
+        {"Noralsy", LfProtoNoralsy},
+    };
+
+    for(size_t i = 0; i < sizeof(map) / sizeof(map[0]); i++) {
+        if(strcmp(name, map[i].name) == 0) return map[i].proto;
+    }
+
+    return LfProtoUnknown;
+}
+
 const char* lf_score_letter(int score) {
     /* Warden's thresholds, so a grade means the same thing on both radios. */
     if(score >= 90) return "A+";
