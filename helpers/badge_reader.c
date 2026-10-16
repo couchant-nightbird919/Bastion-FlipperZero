@@ -3,12 +3,9 @@
 #include <toolbox/protocols/protocol_dict.h>
 #include <lib/lfrfid/protocols/lfrfid_protocols.h>
 
-/* LfProto mirrors LFRFIDProtocol entry for entry so the ids can be cast across.
- * If the firmware ever inserts a protocol, this stops the build instead of
- * silently grading every badge as the wrong format. */
-_Static_assert(
-    (int)LfProtoUnknown == (int)LFRFIDProtocolMax,
-    "LfProto has drifted from the firmware's LFRFIDProtocol enum");
+/* Firmware variants are free to add or reorder LF RFID protocols. Bastion
+ * therefore maps the firmware-reported protocol name to its own stable enum
+ * instead of casting the firmware's numeric ProtocolId. */
 
 struct BadgeReader {
     ProtocolDict* dict;
@@ -155,7 +152,8 @@ bool badge_reader_take(BadgeReader* reader, BadgeCapture* out, FuriString* rende
 
     memset(out, 0, sizeof(*out));
     LfReading* r = &out->reading;
-    r->proto = (LfProto)protocol;
+    const char* name = protocol_dict_get_name(reader->dict, protocol);
+    r->proto = lf_proto_from_firmware_name(name);
 
     /* The grader knows each format's real carrier. The firmware only tracks two
      * demodulators (ASK and PSK) and runs the FSK formats through the ASK path,
@@ -171,7 +169,6 @@ bool badge_reader_take(BadgeReader* reader, BadgeCapture* out, FuriString* rende
     }
     r->validate_count = protocol_dict_get_validate_count(reader->dict, protocol);
 
-    const char* name = protocol_dict_get_name(reader->dict, protocol);
     const char* manufacturer = protocol_dict_get_manufacturer(reader->dict, protocol);
     snprintf(out->fw_name, sizeof(out->fw_name), "%s", name ? name : "");
     snprintf(out->manufacturer, sizeof(out->manufacturer), "%s", manufacturer ? manufacturer : "");
